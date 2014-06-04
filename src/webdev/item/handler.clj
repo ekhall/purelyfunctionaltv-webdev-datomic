@@ -1,5 +1,5 @@
 (ns webdev.item.handler
-  (:require [webdev.item.model :refer [create-item
+  (:require [webdev.item.model-datomic :refer [create-item
                                        read-items
                                        update-item
                                        delete-item]]

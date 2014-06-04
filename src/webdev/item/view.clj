@@ -76,6 +76,7 @@
                [:tbody
                 (for [i items]
                   [:tr
+                   [:td (pr-str i)]
                    [:td (delete-item-form (:id i))]
                    [:td (update-item-form (:id i) (:checked i))]
                    [:td (h (:name i))]

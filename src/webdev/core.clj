@@ -1,5 +1,5 @@
 (ns webdev.core
-  (:require [webdev.item.model :as items]
+  (:require [webdev.item.model-datomic :as items]
             [webdev.item.handler :refer [handle-index-items
                                          handle-create-item
                                          handle-delete-item
@@ -13,7 +13,8 @@
             [compojure.route :refer [not-found]]
             [ring.handler.dump :refer [handle-dump]]))
 
-(def db "jdbc:postgresql://localhost/webdev")
+(def db-pg "jdbc:postgresql://localhost/webdev")
+(def db "datomic:dev://localhost:4334/webdev")
 
 (defn yo-name
   [req]
@@ -27,6 +28,7 @@
 (defn calc
   [req]
   (let [a (Integer. (get-in req [:route-params :a]))
+
         op (get-in req [:route-params :op])
         f (get ops op)
         b (Integer. (get-in req [:route-params :b]))]
@@ -55,7 +57,7 @@
 
 (defn wrap-server-name [hdlr]
   (fn [req]
-    (assoc-in (hdlr req) [:headers "Server"] "Kevtronica 9000")))
+    (assoc-in (hdlr req) [:headers "Server"] "Datomickev")))
 
 (def sim-methods {"PUT" :put
                    "DELETE" :delete})
