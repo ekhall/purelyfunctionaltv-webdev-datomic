@@ -36,12 +36,45 @@
   (let [conn (d/connect db)]
     @(d/transact conn schema) conn))
 
-(defn create-item [db])
+(defn create-item [db name description]
+  (:id (first @(d/transact (d/connect db)
+                           [{:db/id (d/tempid :item)
+                             :item/name name
+                             :item/description description}]))))
+
 (defn update-item [db])
 (defn delete-item [db])
-(defn read-items [db]
+
+(def item-convert-data
+  [:item/name
+   :item/description])
+
+(defn entity->map [convert-data entity]
+  (reduce (fn [m attr]
+            (if (keyword? attr)
+              (if-let [v (attr entity)]
+                (assoc m attr v)
+                m)
+              (let [[attr conv-fn] attr]
+                (if-let [v (attr entity)]
+                  (assoc m attr (conv-fn v))
+                  m))))
+          {}
+          convert-data))
+
+(defn read-items2 [db]
   '({:date_created #inst "2014-06-03T19:02:10.396340000-00:00",
      :checked true,
      :description "testset ",
      :name "This is a test from datomic",
      :id #uuid "a92f247d-854c-47d1-b1aa-a9f17d610f45"}))
+
+(defn read-items [db]
+  (let [conn (d/connect db)
+        results (d/q '[:find ?e ?name ?description
+                       :where
+                       [?e item/name ?name]
+                       [?e item/description ?description]]
+                     (d/db conn))]
+    (for [r results]
+      (d/touch (d/entity (d/db (d/connect db)) (first r))))))
