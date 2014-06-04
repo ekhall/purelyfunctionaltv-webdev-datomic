@@ -72,14 +72,16 @@
                  [:th.col-sm-2]
                  [:th.col-sm-2]
                  [:th "Name"]
-                 [:th "Description"]]]
+                 [:th "Description"]
+                 [:th "Datomic Entity ID"]]]
                [:tbody
                 (for [i items]
                   [:tr
                    [:td (delete-item-form (:id i))]
                    [:td (update-item-form (:id i) (:checked i))]
                    [:td (h (:item/name i))]
-                   [:td (h (:item/description i))]])]]
+                   [:td (h (:item/description i))]
+                   [:td (h (:db/id i))]])]]
               [:div.col-sm-offset-1 "There are no items."])]
            [:div.col-sm-8
             [:h2 "Create a new item"]

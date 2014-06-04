@@ -29,6 +29,13 @@
     :db/cardinality :db.cardinality/one
     :db/doc "An item's checked status"
     :db.install/_attribute :db.part/db}
+
+   {:db/id #db/id[:db.part/db]
+    :db/ident :item/active
+    :db/valueType :db.type/boolean
+    :db/cardinality :db.cardinality/one
+    :db/doc "Wheter an item is active or inactive (deleted)"
+    :db.install/_attribute :db.part/db}
    ])
 
 (defn create-table [db]
@@ -40,7 +47,8 @@
   (:id (first @(d/transact (d/connect db)
                            [{:db/id (d/tempid :item)
                              :item/name name
-                             :item/description description}]))))
+                             :item/description description
+                             :item/active true}]))))
 
 (defn update-item [db])
 (defn delete-item [db])
@@ -62,19 +70,20 @@
           {}
           convert-data))
 
+(defn read-items [db]
+  (let [conn (d/connect db)
+        results (d/q '[:find ?e
+                       :where
+                       [?e item/name ?name]
+                       [?e item/description ?description]
+                       [?e item/active true]]
+                     (d/db conn))]
+    (for [r results]
+      (d/touch (d/entity (d/db (d/connect db)) (first r))))))
+
 (defn read-items2 [db]
   '({:date_created #inst "2014-06-03T19:02:10.396340000-00:00",
      :checked true,
      :description "testset ",
      :name "This is a test from datomic",
      :id #uuid "a92f247d-854c-47d1-b1aa-a9f17d610f45"}))
-
-(defn read-items [db]
-  (let [conn (d/connect db)
-        results (d/q '[:find ?e ?name ?description
-                       :where
-                       [?e item/name ?name]
-                       [?e item/description ?description]]
-                     (d/db conn))]
-    (for [r results]
-      (d/touch (d/entity (d/db (d/connect db)) (first r))))))
