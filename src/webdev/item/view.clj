@@ -76,11 +76,10 @@
                [:tbody
                 (for [i items]
                   [:tr
-                   [:td (pr-str i)]
                    [:td (delete-item-form (:id i))]
                    [:td (update-item-form (:id i) (:checked i))]
-                   [:td (h (:name i))]
-                   [:td (h (:description i))]])]]
+                   [:td (h (:item/name i))]
+                   [:td (h (:item/description i))]])]]
               [:div.col-sm-offset-1 "There are no items."])]
            [:div.col-sm-8
             [:h2 "Create a new item"]
